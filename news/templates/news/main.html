@@ -1,0 +1,79 @@
+{% extends 'news/base.html' %}
+
+{% block title %}Agregator{% endblock %}
+
+{% block dropdown %}
+<div class="dropdown">
+  <button type="button" class="nav-link btn btn-link dropdown-toggle" data-toggle="dropdown">
+  Все источники
+  </button>
+    {% csrf_token %}
+    <form method="post">
+        <div class="dropdown-menu">
+          <h5 class="dropdown-header">Технологии</h5>
+            {% for name in list_of_technology %}
+            <small><label class="checkbox" style="margin: 5px;"><input style="margin: 5px;" type="checkbox" name="dropdown" value="{{ name }}">{{ name }}</label></small><br>
+            {% endfor %}
+            <br>
+            <h5 class="dropdown-header">Наука</h5>
+            {% for name in list_of_science %}
+            <small><label class="checkbox" style="margin: 5px;"><input style="margin: 5px;" type="checkbox" name="dropdown" value="{{ name }}">{{ name }}</label></small><br>
+            {% endfor %}
+            <br>
+          <input class="btn btn-link mx-auto d-block" type="submit" value="Применить">
+        </div>
+    </form>
+{% endblock %}
+
+{% block main_content %}
+{% for new in news %}
+<div class="card mb-4 bg-light">
+  <a href="{% url 'news:post' new.id %}"><img class="bd-placeholder-img card-img-top img-rounded" width="80%"  src="{{ new.picture }}"></a>
+  <div class="card-body">
+    <a href="{{ new.site }}" target="_blank"><img class="mx-auto d-block logo" src="{{ new.logo }}" width="40%"></a>
+    <hr width="80%" align="center">
+    <p class="card-text"><a href="{% url 'news:post' new.id %}" target="_blank"><h3 align="center"><b>{{new.title}}</b></h3></a></p>
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="btn-group">
+        <a href="{% url 'news:post' new.id %}" target="_blank"><button type="button" class="btn btn-sm btn-outline-secondary">Узнать больше</button></a>
+      </div>
+      <small class="text-muted">{{ new }}</small>
+    </div>
+  </div>
+</div>
+{% endfor %}
+    <form method="post">
+      {% csrf_token %}
+      <button class="btn btn-secondary mx-auto d-block" value="more" name="More">Загрузить еще</button>
+      <hr>
+    </form>
+{% endblock %}
+
+
+{% block second_content %}
+{% for new in r_news %}
+<div class="card mb-4 bg-light">
+  <a href="{% url 'news:post' new.id %}"><img class="bd-placeholder-img card-img-top img-rounded" width="80%" style="max-width: 360px; max-height: 265px;"  src="{{ new.picture }}"></a>
+  <div class="card-body">
+    <a href="{{ new.site }}" target="_blank"><img class="mx-auto d-block logo" src="{{ new.logo }}" width="40%"></a>
+    <hr width="80%" align="center">
+    <p class="card-text"><a href="{% url 'news:post' new.id %}" target="_blank"><h6 align="center"><b>{{new.title}}</b></h6></a></p>
+    <h6 align="center"><small class="text-muted">{{ new }}</small></h6>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+var s = function doAjax() {
+      $.ajax({
+              type: 'POST',
+              url: 'http://127.0.0.1:8000/',
+              data: {'csrfmiddlewaretoken': '{{ csrf_token }}', 'Refresh': 'refresh'},
+              dataType: 'json',
+              success: function (data) {
+              $('#hidden').val(data);
+              }
+      })};
+ setInterval(s,300000);
+{% endblock %}
